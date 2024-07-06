@@ -42,7 +42,6 @@ export function CreateRoomForm() {
     await createRoomAction(values);
     router.push("/your-rooms");
     // ✅ This will be type-safe and validated.
-    console.log(values);
   }
 
   return (

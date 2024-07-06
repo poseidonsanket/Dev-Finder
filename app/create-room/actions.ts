@@ -9,7 +9,6 @@ import { createRoom } from "../data-access/room";
 export async function createRoomAction(roomData: Omit<Room, "id" | "userId">) {
   unstable_noStore();
   const session = await getSession();
-  console.log(session);
   if (!session) {
     throw new Error("you must be logged in to create this room");
   }

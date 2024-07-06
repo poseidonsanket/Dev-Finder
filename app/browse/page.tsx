@@ -13,7 +13,6 @@ export default async function Home({
     search: string;
   };
 }) {
-  console.log(searchParams);
   unstable_noStore();
   const rooms = await getRooms(searchParams.search);
 
