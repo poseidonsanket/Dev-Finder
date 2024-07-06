@@ -1,17 +1,22 @@
 import { drizzle } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
-import postgres from "postgres";
 import * as schema from "./schema";
+import postgres from "postgres";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
-// for migrations
-// const migrationClient = postgres(process.env.DATABASE_URL!, { max: 1 });
-// migrate(drizzle(migrationClient), ...)
+declare global {
+  // eslint-disable-next-line no-var -- only var works here
+  var db: PostgresJsDatabase<typeof schema> | undefined;
+}
+let db: PostgresJsDatabase<typeof schema>;
 
-// for query purposes
-const queryClient = postgres(process.env.DATABASE_URL!);
-const db = drizzle(queryClient, { schema });
-// await db.select().from(...)...
+if (process.env.NODE_ENV === "production") {
+  db = drizzle(postgres(process.env.DATABASE_URL!), { schema });
+} else {
+  if (!global.db) {
+    global.db = drizzle(postgres(process.env.DATABASE_URL!), { schema });
+  }
+
+  db = global.db;
+}
 
 export { db };
-
-//postgresql://neondb_owner:9yoc8ZYRndaJ@ep-mute-union-a1lvrdea.ap-southeast-1.aws.neon.tech/devfinder?sslmode=require
