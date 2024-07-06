@@ -13,9 +13,9 @@ export default async function YourRoomsPage() {
     <main className="min-h-screen p-16">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl">Your Rooms</h1>
-        <Button asChild>
+        {rooms.length > 0 && <Button asChild>
           <Link href="/create-room">Create Room</Link>
-        </Button>
+        </Button>}
       </div>
 
       <div className="grid grid-cols-3 gap-4">

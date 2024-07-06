@@ -1,5 +1,4 @@
 "use client";
-
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -25,7 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-// import { deleteAccountAction } from "./actions";
+import { deleteAccountAction } from "./actions";
 
 function AccountDropdown() {
   const session = useSession();
@@ -45,10 +44,10 @@ function AccountDropdown() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-            //   onClick={async () => {
-            //     await deleteAccountAction();
-            //     signOut({ callbackUrl: "/" });
-            //   }}
+              onClick={async () => {
+                await deleteAccountAction();
+                signOut({ callbackUrl: "/" });
+              }}
             >
               Yes, delete my account
             </AlertDialogAction>
