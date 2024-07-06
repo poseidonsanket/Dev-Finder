@@ -3,6 +3,7 @@ import { Room, room } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { like } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
+import { unstable_noStore } from "next/cache";
 
 export async function getRooms(search: string | undefined) {
   const where = search ? like(room.tags, `%${search}%`) : undefined;
@@ -31,6 +32,7 @@ export async function getRoom(roomId: string) {
 }
 
 export async function deleteRoom(roomId: string) {
+  unstable_noStore();
   await db.delete(room).where(eq(room.id, roomId));
 }
 

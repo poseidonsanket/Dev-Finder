@@ -74,8 +74,8 @@ export function UserRoomCard({ room }: { room: Room }) {
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => {
-                  deleteRoomAction(room.id);
+                onClick={async () => {
+                  await deleteRoomAction(room.id);
                 }}
               >
                 Yes, delete

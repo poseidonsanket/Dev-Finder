@@ -3,10 +3,11 @@
 import { getSession } from "@/lib/auth";
 import { db } from "../db";
 import { Room, room } from "../db/schema";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 import { createRoom } from "../data-access/room";
 
 export async function createRoomAction(roomData: Omit<Room, "id" | "userId">) {
+  unstable_noStore();
   const session = await getSession();
   console.log(session);
   if (!session) {
@@ -15,7 +16,7 @@ export async function createRoomAction(roomData: Omit<Room, "id" | "userId">) {
 
   const room = await createRoom(roomData, session.user.id);
 
-  revalidatePath("/browse");
+    revalidatePath("/browse");
 
   return room;
 }

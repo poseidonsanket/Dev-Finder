@@ -1,86 +1,57 @@
-"use client";
-
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { SearchIcon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import Link from "next/link";
+import { getRooms } from "../data-access/room";
+import { SearchBar } from "./search-bar";
+import { RoomCard } from "./room-card";
+import { unstable_noStore } from "next/cache";
+import Image from "next/image";
 
-const formSchema = z.object({
-  search: z.string().min(0).max(50),
-});
-
-export default function SearchBar() {
-  const router = useRouter();
-  const query = useSearchParams();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      search: query.get("search") ?? "",
-    },
-  });
-
-  const search = query.get("search");
-
-  useEffect(() => {
-    form.setValue("search", search ?? "");
-  }, [search, form]);
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (values.search) {
-      router.push(`/browse?search=${values.search}`);
-    } else {
-      router.push("/browse");
-    }
-  }
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: {
+    search: string;
+  };
+}) {
+  console.log(searchParams);
+  unstable_noStore();
+  const rooms = await getRooms(searchParams.search);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
-        <FormField
-          control={form.control}
-          name="search"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  {...field}
-                  className="w-[440px]"
-                  placeholder="Filter rooms by keywords, such as typescript, next.js, python"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit">
-          <SearchIcon className="mr-2" /> Search
+    <main className="min-h-screen p-16">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl">Find Dev Rooms</h1>
+        <Button asChild>
+          <Link href="/create-room">Create Room</Link>
         </Button>
+      </div>
 
-        {query.get("search") && (
-          <Button
-            variant="link"
-            onClick={() => {
-              form.setValue("search", "");
-              router.push("/");
-            }}
-          >
-            Clear
+      <div className="mb-8">
+        <SearchBar />
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        {rooms.map((room) => {
+          return <RoomCard key={room.id} room={room} />;
+        })}
+      </div>
+
+      {rooms.length === 0 && (
+        <div className="flex flex-col gap-4 justify-center items-center mt-24">
+          <Image
+            src="/no-data.svg"
+            width="200"
+            height="200"
+            alt="no data image"
+          />
+
+          <h2 className="text-2xl">No Rooms Yet!</h2>
+
+          <Button asChild>
+            <Link href="/create-room">Create Room</Link>
           </Button>
-        )}
-      </form>
-    </Form>
+        </div>
+      )}
+    </main>
   );
 }
